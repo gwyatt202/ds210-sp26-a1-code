@@ -112,6 +112,30 @@ impl<T> FastVec<T> {
     }
 
     // Student 1 should implement this.
+    pub fn remove(&mut self, i: usize) {
+        // checks length, don't remove out of bounds
+        if i >= self.len {
+            panic!("FastVec: remove out of bounds");
+        }
+
+        // does the cool magic :>
+        unsafe {
+            // removes the desired element
+            let ptr_remove = self.ptr_to_data.add(i);
+            ptr::read(ptr_remove);
+
+            // shifts the rest of the elements one to the left
+            for j in i + 1..self.len {
+                let old_ptr = self.ptr_to_data.add(j);
+                let new_ptr = self.ptr_to_data.add(j - 1);
+                let element = ptr::read(old_ptr);
+                ptr::write(new_ptr, element);
+            }
+        }
+
+        // decrements the length to reflect the new length
+        self.len -= 1;
+    }
 
     // This appears correct but with further testing, you will notice it has a bug!
     // Student 1 and 2 should attempt to find and fix this bug.
