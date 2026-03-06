@@ -11,7 +11,6 @@ fn test_malloc() {
 
     MALLOC.free(ptr);
 }
-<<<<<<< HEAD
 
 #[test]
 fn test_malloc2() {
@@ -19,5 +18,3 @@ fn test_malloc2() {
     assert!(!ptr.is_null());
     MALLOC.free(ptr);
 }
-=======
->>>>>>> origin/submission1

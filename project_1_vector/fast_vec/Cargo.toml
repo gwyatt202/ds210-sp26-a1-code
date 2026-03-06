@@ -7,7 +7,6 @@ edition = "2024"
 name = "fast_vec"
 path = "src/lib.rs"
 
-<<<<<<< HEAD
 [[bin]]
 name = "main"
 path = "src/main.rs"
@@ -28,10 +27,3 @@ slow_vec = { path = "../slow_vec" }
 
 [dev-dependencies]
 rand = "0.10.0"
-=======
-[dependencies]
-malloc = { path = "../malloc" }
-
-[dev-dependencies]
-rand = "0.10.0"
->>>>>>> origin/submission1
