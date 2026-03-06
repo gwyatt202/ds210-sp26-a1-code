@@ -98,6 +98,45 @@ impl<T> FastVec<T> {
     }
 }
 
+
+//Student 2 should implement this.
+pub fn push(&mut self,t:T) {
+
+
+    if self.len == self.capacity {
+
+        let old_ptr_data = self.ptr_to_data; // old
+
+        let new_ptr_to_data =
+            MALLOC.malloc(size_of::<T>() * self.capacity * 2) as *mut T; // target new memeory
+
+        unsafe {
+            for i in 0..self.len {
+                let old_ptr = old_ptr_data.add(i); // point old elem
+                let element = old_ptr.read(); // move old elem
+                let new_ptr = new_ptr_to_data.add(i); // point to new loc
+                new_ptr.write(element); // write elem into newer memory
+            }
+        }
+
+        MALLOC.free(old_ptr_data as *mut u8);
+
+
+        self.ptr_to_data = new_ptr_to_data;
+
+        self.capacity *= 2;
+    }
+
+    unsafe {
+        let new_element_ptr = self.ptr_to_data.add(self.len); // next slot
+        new_element_ptr.write(t); // write new elem
+
+        self.len += 1;
+    }
+}
+
+
+
 // Destructor should clear the fast_vec to avoid leaking memory.
 impl<T> Drop for FastVec<T> {
     fn drop(&mut self) {
