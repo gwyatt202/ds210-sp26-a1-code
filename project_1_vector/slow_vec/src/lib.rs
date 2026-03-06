@@ -123,4 +123,3 @@ impl<T: Display> Display for SlowVec<T> {
         write!(f, "SlowVec({})", self.fixed)
     }
 }
-
