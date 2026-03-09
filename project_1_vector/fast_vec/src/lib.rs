@@ -12,7 +12,7 @@ pub struct FastVec<T> {
 }
 
 impl<T> FastVec<T> {
-    // Creating a new FastVec that is either empty or has capacity for some future elements.
+    // Creating a new FastVec -> either empty or has space for future data
     pub fn new() -> FastVec<T> {
         return FastVec::with_capacity(1);
     }
@@ -25,7 +25,7 @@ impl<T> FastVec<T> {
         };
     }
 
-    // Retrieve the FastVec's length and capacity
+    // Obtain fastVec's length and capacity
     pub fn len(&self) -> usize {
         return self.len;
     }
@@ -34,7 +34,7 @@ impl<T> FastVec<T> {
         return self.capacity;
     }
 
-    // Transforms an instance of SlowVec to a regular vector.
+    // Transforms SlowVec to a regular vec.
     pub fn into_vec(mut self) -> Vec<T> {
         let mut v = Vec::with_capacity(self.len);
 
@@ -113,18 +113,18 @@ impl<T> FastVec<T> {
 
     // Student 1 should implement this.
     pub fn remove(&mut self, i: usize) {
-        // checks length, don't remove out of bounds
+        // checks length
         if i >= self.len {
             panic!("FastVec: remove out of bounds");
         }
 
-        // does the cool magic :>
+        // unsafe block  
         unsafe {
             // removes the desired element
             let ptr_remove = self.ptr_to_data.add(i);
             ptr::read(ptr_remove);
 
-            // shifts the rest of the elements one to the left
+            // shifts the rest of the elements one 
             for j in i + 1..self.len {
                 let old_ptr = self.ptr_to_data.add(j);
                 let new_ptr = self.ptr_to_data.add(j - 1);
@@ -133,7 +133,7 @@ impl<T> FastVec<T> {
             }
         }
 
-        // decrements the length to reflect the new length
+        // increments the length to reflect the new length by -1
         self.len -= 1;
     }
 
