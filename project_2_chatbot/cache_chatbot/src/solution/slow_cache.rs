@@ -31,14 +31,33 @@ impl<V> Cache<V> {
     }
 
     // Helper functions.
+    //std 1 george
     fn remove_least_recently_used(&mut self) {
-        // TODO: your code goes here.
-        // println!("Removing least recently used");
+        //take the element in usage_history that is the oldest
+        let mut oldest_user = &self.usage_history[0];
+        // takes the first element of the usage history (oldest user in cache)
+        self.hashmap.remove(oldest_user);
+        // removes this element
+        let update_cache = self.usage_history.clone()[1..].to_vec();
+        //cloning the vector subsequent elements (after oldest user)
+        self.usage_history = update_cache;
+        //idk how usage_history is mutable but i guess it is lmao
+        //changing the actual cache to the update_cache
+
+        println!("Removing least recently used");
     }
+
+    // std 2 phil
     fn mark_as_most_recently_used(&mut self, username: String) {
-        // TODO: your code goes here.
-        // println!("Marking {username} as most recently used");
+        println!("Marking {username} as most recently used");
+
+    self.usage_history.retain(|user| user != &username);
+    //retain method removes everything but the username
+    self.usage_history.push(username);
+    //pushes the username into the 'most recently used' element
     }
+
+
 
     // Reading from the cache:
     // if the username is in the cache, it must be marked as the most recently
@@ -55,10 +74,10 @@ impl<V> Cache<V> {
     // 1. What if cache is at capacity?
     // 2. What should be the most recently used chat after this insertion?
     pub fn insert_chat(&mut self, username: String, chat: V) {
-        println!("Insert {username} into cache:");
-        println!("Cache before inserting: -----");
-        println!("{:?}", self);
-        println!("-----------------------------");
+        //println!("Insert {username} into cache:");
+        //println!("Cache before inserting: -----");
+        //println!("{:?}", self);
+        //println!("-----------------------------");
 
         self.hashmap.insert(username.clone(), chat);
         self.mark_as_most_recently_used(username);
@@ -66,9 +85,9 @@ impl<V> Cache<V> {
             self.remove_least_recently_used();
         }
 
-        println!("Cache after inserting: ------");
-        println!("{:?}", self);
-        println!("-----------------------------");
+        //println!("Cache after inserting: ------");
+        //println!("{:?}", self);
+        //println!("-----------------------------");
     }
 }
 

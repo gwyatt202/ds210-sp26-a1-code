@@ -51,16 +51,22 @@ impl ChatbotV4 {
 
     //student 2 (phil)
     pub fn get_history(&self, username: String) -> Vec<String> {
-    let filename = &format!("{}.txt", username);
-    
-    match file_library::load_chat_session_from_file(&filename) {
-        None => {
-            return Vec::new();
-        }
-        Some(session) => {
-            // TODO: what should happen here?
-            return Vec::new();
+        let filename = &format!("{}.txt", username);
+
+        match file_library::load_chat_session_from_file(&filename) {
+            None => {
+                return Vec::new();
+            },
+            Some(session) => {
+                //don't need .session() cuz the load function already unwraps the LLM
+                let history = &session.history()[1..];
+                // removing the first promt
+                let stuff_in_history = history.iter().map(|msg| String::from(msg.content()));
+                // extracting the strings in history by iterating and for each msg(iteration), and gives string ownership to variable
+                let final_contents = stuff_in_history.collect();
+                //pushing the strings into a vector
+                return final_contents;
+            }
         }
     }
-}
 }
