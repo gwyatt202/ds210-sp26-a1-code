@@ -64,11 +64,20 @@ impl ChatbotV3 {
 
 
     #[allow(dead_code)]
-    pub fn get_history(&self, username: String) -> Vec<String> {
-        // Extract the chat message history for the given username
-        // Hint: think of how you can retrieve the Chat object for that user, when you retrieve it
-        // you may want to use https://docs.rs/kalosm/0.4.0/kalosm/language/struct.Chat.html#method.session
-        // to then retrieve the history!
-        return Vec::new();
+    pub fn get_history(&self, username: String) -> Vec<String> { // &self allows reference to the CHATBOTv3 struct (model and sessions)
+       if let Some(chat_session) = self.sessions.get(&username) {  //chat_session IS A REFERENCE TO THE VALUE OF STRUCT FROM CHATBOTV3
+        //shorthand for:
+        //match self.sessions.get(&username) 
+        //Some (chat_session) 
+        //so if the username exists in the struct, we run the below code, if not, create a new vector
+        //makes the variable chat_session which is a reference to the chatbot in the struct
+            return chat_session.session().unwrap().history() //takes the session object from chat_session, reads message
+                .iter() //loop thu each msg
+                .filter(|m| m.role() != MessageType::SystemPrompt) //keeps only user and chatbot msgs
+                .map(|m| m.content().to_string()) //extracts text from each msg
+                .collect(); //gathers all strings into a vec<str>
+        }
+        return Vec::new(); //what happens if the condition fails
     }
 }
+
