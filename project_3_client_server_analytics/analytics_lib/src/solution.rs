@@ -84,9 +84,41 @@ pub fn group_by_dataset(dataset: Dataset, group_by_column: &String) -> HashMap<V
     return map;
 }
 
-//std 2
+// Aggregates each group in the HashMap into a single value.
+// Returns a HashMap mapping each group key to aggregated result.
 pub fn aggregate_dataset(dataset: HashMap<Value, Dataset>, aggregation: &Aggregation) -> HashMap<Value, Value> {
-    todo!("Implement this!");
+    let mut result = HashMap::new();
+
+    // key = the group-by value, group = all rows in that bucket.
+    for (key, group) in dataset {
+        let value = match aggregation {
+
+            // count the number of rows in this group.
+            Aggregation::Count(_) => Value::Integer(group.len() as i32),
+
+            // sum add up all integer values in the specified column across each row.
+            Aggregation::Sum(col_name) => {
+                let idx = group.column_index(col_name);
+                let sum: i32 = group.iter().map(|row| match row.get_value(idx) {
+                    Value::Integer(n) => *n,
+                    _ => panic!("Sum on non-integer column"),
+                }).sum();
+                Value::Integer(sum)
+            }
+             // average sum divided by count
+            Aggregation::Average(col_name) => {
+                let idx = group.column_index(col_name);
+                let count = group.len() as i32;
+                let sum: i32 = group.iter().map(|row| match row.get_value(idx) {
+                    Value::Integer(n) => *n,
+                    _ => panic!("Average on non-integer column"),
+                }).sum();
+                Value::Integer(sum / count)
+            }
+        };
+        result.insert(key, value);
+    }
+    result
 }
 
 pub fn compute_query_on_dataset(dataset: &Dataset, query: &Query) -> Dataset {
