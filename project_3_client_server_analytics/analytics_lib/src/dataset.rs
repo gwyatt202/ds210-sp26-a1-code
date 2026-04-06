@@ -1,12 +1,20 @@
 use std::fmt::{Debug, Display};
 
-#[derive(Clone, PartialEq, Eq, Debug)]
+// Serialize and Deserialize let Rust convert these types to/from bytes (e.g., JSON)
+// so they can be sent over the network between client and server.
+use serde::{Deserialize, Serialize};
+
+// Clone: lets us call .clone() to make a copy of this type.
+// Serialize/Deserialize: required to send this type over the network via RPC.
+#[derive(Clone, PartialEq, Eq, Debug, Serialize, Deserialize)]
 pub enum ColumnType {
     String,
     Integer,
 }
 
-#[derive(Clone, PartialEq, Hash, Eq, Debug, PartialOrd, Ord)]
+// Value holds a single cell in a row — either a String or Integer.
+// Serialize/Deserialize needed so rows (which contain Values) can travel over the network.
+#[derive(Clone, PartialEq, Hash, Eq, Debug, PartialOrd, Ord, Serialize, Deserialize)]
 pub enum Value {
     String(String),
     Integer(i32),
@@ -20,7 +28,9 @@ impl Value {
     }
 }
 
-#[derive(Clone, PartialEq, Eq, PartialOrd, Ord)]
+// Row is a single record in the dataset (a list of Values).
+// Needs Serialize/Deserialize so Dataset (which contains Rows) can be sent over the network.
+#[derive(Clone, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
 pub struct Row {
     values: Vec<Value>,
 }
@@ -39,6 +49,10 @@ impl Row {
     }
 }
 
+// Dataset is the top-level data container sent between client and server.
+// Clone: server needs to clone its internal dataset before returning it.
+// Serialize/Deserialize: the whole Dataset is sent as bytes over the RPC connection.
+#[derive(Clone, Serialize, Deserialize)]
 pub struct Dataset {
     columns: Vec<(String, ColumnType)>,
     rows: Vec<Row>,
