@@ -26,17 +26,17 @@ impl RPCInterface for AnalyticsServer {
         return solution::hello();
     }
 
-    
+    // slow_rpc: forwards to solution::slow_rpc which returns the full raw dataset.
+    // The heavy lifting (running the query) happens on the client side.
     async fn slow_rpc(self, _context: tarpc::context::Context) -> analytics_lib::dataset::Dataset {
         return solution::slow_rpc(self.dataset);
     }
-    
 
-
+    // fast_rpc: forwards the query to solution::fast_rpc which runs it server-side.
+    // Only the small result dataset is sent back to the client.
     async fn fast_rpc(self, _context: tarpc::context::Context, query: analytics_lib::query::Query) -> analytics_lib::dataset::Dataset {
         return solution::fast_rpc(self.dataset, query);
     }
-
 }
 
 // Do not modify this code.

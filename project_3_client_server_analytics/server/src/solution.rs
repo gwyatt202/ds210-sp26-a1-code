@@ -7,6 +7,9 @@ pub fn hello() -> String {
 
 pub fn slow_rpc(input_dataset: &Dataset) -> Dataset {
     println!("slow_rpc called");
+    // Clone and return the entire raw dataset to the client.
+    // The client is responsible for running the query on this data.
+    // .clone() makes a full copy because we can't move out of a reference.
     return input_dataset.clone();
 }
 

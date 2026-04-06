@@ -1,7 +1,11 @@
 use crate::dataset::Value;
+// Needed so Query (and its inner types) can be sent from client to server via fast_rpc.
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize, Clone, Debug)]
+// Condition represents the FILTER part of a query, e.g. "section == A1".
+// Box<Condition> is used for recursive types (And/Or/Not contain nested Conditions).
+// Debug is required by tarpc to generate the RPC glue code.
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum Condition {
     Equal(String, Value),
     Not(Box<Condition>),
@@ -9,7 +13,8 @@ pub enum Condition {
     Or(Box<Condition>, Box<Condition>),
 }
 
-#[derive(Serialize, Deserialize, Clone, Debug)]
+// Aggregation represents the COUNT/SUM/AVERAGE part of a query.
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum Aggregation {
     Count(String),
     Sum(String),
@@ -25,7 +30,9 @@ impl Aggregation {
     }
 }
 
-#[derive(Serialize, Deserialize, Clone, Debug)]
+// Query is the full query: a filter, a group-by column, and an aggregation.
+// This entire struct is sent from client to server in fast_rpc.
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Query {
     filter: Condition,
     group_by: String,
