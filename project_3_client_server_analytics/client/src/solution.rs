@@ -9,17 +9,25 @@ pub async fn run_hello(rpc_client: &RPCInterfaceClient) {
 
 pub async fn run_slow_rpc(rpc_client: &RPCInterfaceClient, query: Query) -> Dataset {
     println!("using slow_rpc");
-    
-    // let dataset = rpc_client.slow_rpc().await.unwrap();
-    todo!("Implement this");
 
-    // What should you do to the dataset?
-    // Hint: you have not used `query`, maybe you need to use it somehow?
+    // Step 1: call slow_rpc on the server — it returns the ENTIRE raw dataset.
+    // Context::current() is required by tarpc for every RPC call (tracks deadlines/metadata).
+    // .await waits for the async network call to finish.
+    // .unwrap() extracts the value, or panics if the connection failed.
+    let dataset = rpc_client.slow_rpc(Context::current()).await.unwrap();
+
+    // Step 2: the server didn't run the query — WE have to run it here on the client.
+    // This is what makes slow_rpc "slow": all the raw data came over the network,
+    // and now the client has to do all the filtering/grouping/aggregation work.
+    return compute_query_on_dataset(&dataset, &query);
 }
 
 pub async fn run_fast_rpc(rpc_client: &RPCInterfaceClient, query: Query) -> Dataset {
     println!("using fast_rpc");
 
-    // You should call fast_rpc here and not slow_rpc.
-    todo!("Implement this");
+    // Send the query to the server — it runs compute_query_on_dataset() over there
+    // and returns only the small result. We just receive and return it directly.
+    // This is "fast" because only the final result (e.g., 5 rows) travels the network,
+    // not the thousands of rows in the raw dataset.
+    return rpc_client.fast_rpc(Context::current(), query).await.unwrap();
 }
