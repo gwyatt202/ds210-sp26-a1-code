@@ -43,7 +43,7 @@ fn minimax(board: &mut Board, player: Player) -> (i32, usize, usize) {
 
     for coord in avail_moves {
         board.apply_move(coord, player); //applying first iteration of avail_moves so board changes
-        let (score, _, _) = minimax(board, player.flip()); // function recursviely called, new available moves and board
+        let (score, _, _) = minimax(board, player.flip()); // function recursviely called, at terminal state, initialise score 
         // will hopefully go down every single branch after coord has been applied
         //so player 1 puts coord, minimax called again so the new board and alternate player:
             //checks if game over and returns if yes, gets the available moves
@@ -51,7 +51,7 @@ fn minimax(board: &mut Board, player: Player) -> (i32, usize, usize) {
             //my turn again
             //recurses until the game over
             //SO REGARDLESS IF WE ARE X OR 0 WE GO DOWN THE TREES ALTERNATING BETWEEN X AND 0 AND GET TO -1/+1/0
-        board.undo_move(coord, player); // undo entire board playout, try the second coord in the initial set of available moves
+        board.undo_move(coord, player); // undo move, try the second coord in the set of available moves
         // now that board is cleared after ever score is recorded, we can record the score of each available move at this current board state 
         
         //this is from the agent code
@@ -66,7 +66,7 @@ fn minimax(board: &mut Board, player: Player) -> (i32, usize, usize) {
                     if score < best_score { //same logic but for less than (since this is the minimiser we start at +inf)
                         best_coord = coord;
                         best_score = score;
-                    }
+                    } //we iterate ourself out of the list of available moves
                 }
             }
     };   
